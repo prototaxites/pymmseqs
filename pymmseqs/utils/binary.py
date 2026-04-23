@@ -1,12 +1,14 @@
 # pymmseqs/utils/binary.py
 import os
 import platform
+import shutil
 from sysconfig import get_path
 
 def get_mmseqs_binary():
     """
     Retrieve the path to the mmseqs2 binary.
-    Allows overriding via the MMSEQS2_PATH environment variable.
+    Force a path by setting the MMSEQS2_PATH environment variable, otherwise check in
+    MMSeqs2 is on the path. If that doesn't exist, use the bundled version.
     """
     custom_path = os.getenv('MMSEQS2_PATH')
     if custom_path:
@@ -16,6 +18,10 @@ def get_mmseqs_binary():
             raise FileNotFoundError(
                 f"mmseqs2 binary specified by MMSEQS2_PATH does not exist: {custom_path}"
             )
+
+    mmseqs_binary = shutil.which("mmseqs")
+    if mmseqs_binary:
+        return mmseqs_binary
     
     system = platform.system()
     binary_name = 'mmseqs.exe' if system == 'Windows' else 'mmseqs'
